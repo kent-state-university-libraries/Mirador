@@ -1,0 +1,4 @@
+[submodule "views/public/mirador"]
+	path = views/public/mirador
+	url = https://github.com/ProjectMirador/mirador.git
+	branch = 2.1.4
