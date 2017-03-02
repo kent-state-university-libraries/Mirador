@@ -6,19 +6,31 @@ class Mirador_ManifestController extends Omeka_Controller_AbstractActionControll
     public function showAction()
     {
       global $base_url;
-      $item = $this->view->item = get_record_by_id('Item', $_GET['item_id']);
-      $iiif_server = get_option('mirador_iiif_server');
-      $total = count($item->Files) - 1;
+      if (empty($_GET['item_id'])) {
+        $item = FALSE;
+      }
+      // if no item ID, show all files in the system
+      else {
+        $item = $this->view->item = get_record_by_id('Item', $_GET['item_id']);
+      }
+
+      $option = APPLICATION_ENV === 'production' ? 'mirador_iiif_server_prod' : 'mirador_iiif_server_test';
+      $iiif_server = get_option($option);
+
+      $id = $base_url;
+      if ($item) {
+        $id .= '/items/show/' . $item->id;
+      }
 
       $this->view->json = array(
         '@context' => 'http://www.shared-canvas.org/ns/context.json',
-        '@id' => $base_url . '/manifest.json?item_id=' . $item->id,
+        '@id' => $base_url . '/manifest.json?item_id=' . ($item ? $item->id : 0),
         '@type' => 'sc:Manifest',
-        'label' => metadata($item, array('Dublin Core', 'Title')),
+        'label' => $item ? metadata($item, array('Dublin Core', 'Title')) : get_option('site_title'),
         'description' => '',
         'sequences' => array(
           array(
-            '@id' => $base_url . '/items/show/' . $item->id,
+            '@id' => $id,
             '@type' => 'sc:Sequence',
             'label' => 'Item Show',
             'canvases' => array(),
@@ -26,26 +38,35 @@ class Mirador_ManifestController extends Omeka_Controller_AbstractActionControll
         ),
       );
 
-      foreach ($item->Files as $count => $file) {
-        if ($file->mime_type !== 'image/tiff') continue;
+      if ($item) {
+        foreach ($item->Files as $count => $file) {
+          $this->add_canvas($file, $item, $count, $this, $iiif_server, $id);
+        }
+      }
+      else {
+        $files = get_db()->query('SELECT id, original_filename, metadata,mime_type, filename FROM files order BY original_filename');
+        $count = 0;
+        while ($file = $files->fetchObject()) {
+          $this->add_canvas($file, $item, $count, $this, $iiif_server, $id);
+          ++$count;
+        }
+      }
+    }
 
-        if (APPLICATION_ENV === 'production') {
-          $file->filename = 'prod/' . $file->filename;
-        }
-        else {
-          $file->filename = 'test/' . $file->filename;
-        }
+    private function add_canvas($file, $item, $count, $that, $iiif_server, $id) {
+        global $base_url;
+        if ($file->mime_type !== 'image/tiff') return;
 
         $metadata = json_decode($file->metadata);
 
         if ($count) {
-          $canvas_id = $base_url . "/items/canvas/{$item->id}/{$file->id}";
+          $canvas_id = $id . '/' . $file->id;
         }
         else {
-          $canvas_id =$base_url . "/items/canvas/{$item->id}";
+          $canvas_id = $base_url . '/items/canvas/' . ($item ? $item->id : $count);
         }
 
-        $this->view->json['sequences'][0]['canvases'][] = array(
+        $that->view->json['sequences'][0]['canvases'][] = array(
           '@id' => $canvas_id,
           '@type' => 'sc:Canvas',
           'label' => $file->original_filename,
@@ -53,7 +74,7 @@ class Mirador_ManifestController extends Omeka_Controller_AbstractActionControll
           'height' => $metadata->video->resolution_y,
           'images' => array(
             array(
-              '@id' => $base_url . "/items/anno/{$item->id}/{$file->id}",
+              '@id' => $base_url . "/items/anno/".($item ? $item->id : 'all')."/{$file->id}",
               '@type' => 'oa:Annotation',
               'motivation' => 'sc:painting',
               'label' => 'Image',
@@ -74,6 +95,5 @@ class Mirador_ManifestController extends Omeka_Controller_AbstractActionControll
             )
           ),
         );
-      }
     }
 }

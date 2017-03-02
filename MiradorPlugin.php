@@ -5,6 +5,8 @@
  *
  * @todo allow setting mirador options in UI/config
  * @todo support other image formats than TIFF
+ * @todo possibly incorporate derivatives using IIIF?
+ * @todo allow more options than item_id. Right now the only options are "show one item's files" or "show all items' files"
  */
 
 class MiradorPlugin extends Omeka_Plugin_AbstractPlugin
@@ -12,6 +14,8 @@ class MiradorPlugin extends Omeka_Plugin_AbstractPlugin
     protected $_hooks = array(
         'define_routes',
         'initialize',
+        'config_form',
+        'config',
     );
 
 
@@ -75,4 +79,27 @@ class MiradorPlugin extends Omeka_Plugin_AbstractPlugin
         }
     }
 
+    public function hookConfigForm()
+    {
+        require_once 'config-form.php';
+    }
+
+    /**
+     * Save the config form results
+     */
+    public function hookConfig()
+    {
+        $options = array(
+            'mirador_iiif_server_prod',
+            'mirador_iiif_server_test',
+        );
+        foreach ($options as $option) {
+            if (empty($_POST[$option])) {
+                delete_option($option);
+            }
+            else {
+                set_option($option, $_POST[$option]);
+            }
+        }
+    }
 }

@@ -22,16 +22,16 @@
         id: "viewer",
         buildPath: "<?php echo $base_url; ?>/plugins/Mirador/views/public/mirador/",
         data: [{
-          manifestUri: "<?php echo $base_url; ?>/manifest.json?item_id=<?php echo $_GET['item_id']; ?>",
+          manifestUri: "<?php echo $base_url; ?>/manifest.json?item_id=<?php echo isset($_GET['item_id']) ? $_GET['item_id'] : 0; ?>",
           location: "<?php echo get_option('site_title'); ?>"
         }],
         mainMenuSettings: {
           show: false
         },
         windowObjects: [{
-          loadedManifest: "<?php echo $base_url; ?>/manifest.json?item_id=<?php echo $_GET['item_id']; ?>",
-          canvasID: "<?php echo $base_url; ?>/items/canvas/<?php echo $_GET['item_id']; ?>",
-          viewType: "ThumbnailsView",
+          loadedManifest: "<?php echo $base_url; ?>/manifest.json?item_id=<?php echo isset($_GET['item_id']) ? $_GET['item_id'] : 0; ?>",
+          canvasID: "<?php echo $base_url; ?>/items/canvas/<?php echo isset($_GET['item_id']) ? $_GET['item_id'] : 0; ?>",
+          viewType: "ImageView",
           displayLayout: false,
           sidePanel: false,
           sidePanelVisible: false,
