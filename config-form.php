@@ -31,6 +31,16 @@
     </div>
 </div>
 
+<div class="field">
+    <div class="two columns alpha">
+        <label for="mirador_search"><?php echo __('Allow Searching files in an item');?></label>
+    </div>
+    <div class="inputs five columns omega">
+      <input type="checkbox" name="mirador_search" value="1" <?php if (get_option('mirador_search')) echo 'checked="checked"'; ?>/>
+      <p><?php echo __('Check this box if you want to provide a search box within the image viewer that will search the metadata for all the files of an item.');?></p>
+    </div>
+</div>
+
 <h3><?php echo __('Advanced Settings'); ?></h3>
 <div class="field">
     <div class="two columns alpha">

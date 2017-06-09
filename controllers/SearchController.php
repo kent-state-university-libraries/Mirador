@@ -23,6 +23,9 @@ class Mirador_SearchController extends Omeka_Controller_AbstractActionController
         $uri = explode('?', $uri);
         $item_id = array_shift($uri);
 
+        // no chance of integrating with solr since we need to know the exact
+        // file ID that's metadata matched the search term so when they click on it
+        // in the mirador viewer it jumps right to that file
         $query = "SELECT record_id, `text`, metadata FROM element_texts t
           INNER JOIN files f ON f.id = t.record_id AND t.record_type = 'File'
           WHERE f.item_id = ? AND t.text LIKE ?";

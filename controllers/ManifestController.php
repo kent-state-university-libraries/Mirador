@@ -41,14 +41,16 @@ class Mirador_ManifestController extends Omeka_Controller_AbstractActionControll
             'label' => 'Item Show',
             'canvases' => array(),
           ),
-        ),
-        'service' => array(
+        )
+      );
+      if (get_option('mirador_search')) {
+        $this->view->json['service'] = array(
           '@context' => 'http://iiif.io/api/search/1/context.json',
           "@id" => $base_url . "/iiif-search/" . $item->id,
           "profile" => "http://iiif.io/api/search/1/search",
           "label" => "Search"
-        ),
-      );
+        );
+      }
 
       $count = 0;
       if ($item) {

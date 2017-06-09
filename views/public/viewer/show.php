@@ -1,4 +1,7 @@
-<?php global $base_url; ?>
+<?php
+  global $base_url;
+  $search = get_option('mirador_search');
+?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -33,17 +36,28 @@
           canvasID: "<?php echo $base_url; ?>/items/canvas/<?php echo isset($_GET['item_id']) ? $_GET['item_id'] : 0; ?>",
           viewType: "ImageView",
           displayLayout: false,
-          sidePanel: true,
-          sidePanelVisible: true,
-          sidePanelOptions: {
-            "tocTabAvailable": false,
-            "layersTabAvailable": false,
-            "searchTabAvailable": true
-          },
+          sidePanel: <?php echo $search ? 'true' : 'false'; ?>,
+          sidePanelVisible: false,
+          <?php if ($search): ?>
+            sidePanelOptions: {
+              "searchTabAvailable": true
+            },
+          <?php endif; ?>
           annotationLayer: true,
           overlay: true,
         }],
       });
+
+      // the default search for mirador is a little ugly, so clean it up a bit
+      // @todo call on the proper mirador event
+      (function($) {
+        $(document).ready(function() {
+           setTimeout(function() {
+            $('.tabGroup li:last-child').click();
+            $('.tabGroup, .searchResults label, .js-search-expand').hide();
+          },1000);
+        })
+      })(jQuery);
     </script>
   </body>
 </html>
