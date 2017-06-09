@@ -1,6 +1,9 @@
 <?php
 
 /**
+ *
+ * Mirador Plugin - integrate Mirador with Omeka
+ *
  * @author  Joe Corall <jcorall@kent.edu>
  *
  * @todo allow setting mirador options in UI/config
@@ -36,7 +39,7 @@ class MiradorPlugin extends Omeka_Plugin_AbstractPlugin
         }
 
         $args['router']->addRoute(
-            'ul_show_page_manifest',
+            'mirador_show_page_manifest',
             new Zend_Controller_Router_Route(
                 'manifest.json',
                 array(
@@ -45,6 +48,19 @@ class MiradorPlugin extends Omeka_Plugin_AbstractPlugin
                     'action'       => 'show',
                     'id'           => 'mirador_manifest'
                 )
+            )
+        );
+        $args['router']->addRoute(
+            'mirador_show_page_search',
+            new Zend_Controller_Router_Route(
+                'iiif-search/:id',
+                array(
+                    'module'       => 'mirador',
+                    'controller'   => 'search',
+                    'action'       => 'show',
+                    'id' => 'mirador_search',
+                ),
+                array('id' => '\d+')
             )
         );
         $args['router']->addRoute(

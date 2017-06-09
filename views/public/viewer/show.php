@@ -16,7 +16,7 @@
   </head>
   <body>
     <div id="viewer"></div>
-    <script src="<?php echo web_path_to('mirador/build/mirador/mirador.js'); ?>"></script>
+    <script src="<?php echo web_path_to('mirador/build/mirador/mirador.min.js'); ?>"></script>
     <script type="text/javascript">
       var omeka_mirador = Mirador({
         id: "viewer",
@@ -33,9 +33,14 @@
           canvasID: "<?php echo $base_url; ?>/items/canvas/<?php echo isset($_GET['item_id']) ? $_GET['item_id'] : 0; ?>",
           viewType: "ImageView",
           displayLayout: false,
-          sidePanel: false,
-          sidePanelVisible: false,
-          annotationLayer: false,
+          sidePanel: true,
+          sidePanelVisible: true,
+          sidePanelOptions: {
+            "tocTabAvailable": false,
+            "layersTabAvailable": false,
+            "searchTabAvailable": true
+          },
+          annotationLayer: true,
           overlay: true,
         }],
       });

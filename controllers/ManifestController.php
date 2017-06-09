@@ -1,4 +1,10 @@
 <?php
+/**
+ * A class to build a IIIF Presentation API 2.1 response from an Omeka item's files
+ *
+ * @package Mirador
+ * @author  Joe Corall <jcorall@kent.edu>
+ */
 
 class Mirador_ManifestController extends Omeka_Controller_AbstractActionController
 {
@@ -23,7 +29,7 @@ class Mirador_ManifestController extends Omeka_Controller_AbstractActionControll
       }
 
       $this->view->json = array(
-        '@context' => 'http://www.shared-canvas.org/ns/context.json',
+        '@context' => 'http://iiif.io/api/presentation/2/context.json',
         '@id' => $base_url . '/manifest.json?item_id=' . ($item ? $item->id : 0),
         '@type' => 'sc:Manifest',
         'label' => $item ? metadata($item, array('Dublin Core', 'Title')) : get_option('site_title'),
@@ -36,16 +42,22 @@ class Mirador_ManifestController extends Omeka_Controller_AbstractActionControll
             'canvases' => array(),
           ),
         ),
+        'service' => array(
+          '@context' => 'http://iiif.io/api/search/1/context.json',
+          "@id" => $base_url . "/iiif-search/" . $item->id,
+          "profile" => "http://iiif.io/api/search/1/search",
+          "label" => "Search"
+        ),
       );
 
+      $count = 0;
       if ($item) {
         foreach ($item->Files as $count => $file) {
-          $this->add_canvas($file, $item, $count, $this, $iiif_server, $id);
+          $this->add_canvas($file, $item, 0, $this, $iiif_server, $id);
         }
       }
       else {
         $files = get_db()->query('SELECT id, original_filename, metadata,mime_type, filename FROM files order BY original_filename');
-        $count = 0;
         while ($file = $files->fetchObject()) {
           $this->add_canvas($file, $item, $count, $this, $iiif_server, $id);
           ++$count;
@@ -64,6 +76,7 @@ class Mirador_ManifestController extends Omeka_Controller_AbstractActionControll
         }
         else {
           $canvas_id = $base_url . '/items/canvas/' . ($item ? $item->id : $count);
+          $canvas_id .= '/' . $file->id;
         }
 
         $that->view->json['sequences'][0]['canvases'][] = array(
@@ -74,7 +87,7 @@ class Mirador_ManifestController extends Omeka_Controller_AbstractActionControll
           'height' => $metadata->video->resolution_y,
           'images' => array(
             array(
-              '@id' => $base_url . "/items/anno/".($item ? $item->id : 'all')."/{$file->id}",
+              '@id' => $base_url . "/items/annotation/".($item ? $item->id : 'all')."/{$file->id}/image",
               '@type' => 'oa:Annotation',
               'motivation' => 'sc:painting',
               'label' => 'Image',
