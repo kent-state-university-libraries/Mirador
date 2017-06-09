@@ -1,6 +1,6 @@
 # Mirador
 
-Omeka plugin to display TIFF images in Mirador IIIF viewer
+Omeka plugin to display TIFF images for an item in Mirador IIIF viewer. Provides an IIIF Presentation and Search endpoint for your Omeka items, and displays the item's files in a Mirador Viewer.
 
 ## Install
 
