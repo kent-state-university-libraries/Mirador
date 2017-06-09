@@ -15,20 +15,27 @@
 class MiradorPlugin extends Omeka_Plugin_AbstractPlugin
 {
     protected $_hooks = array(
+        'install',
         'define_routes',
         'initialize',
         'config_form',
         'config',
     );
 
+    public function hookInstall() {
+        set_option('mirador_override_viewer_in_theme', '0');
+    }
 
     public function hookInitialize()
     {
-
-        add_file_display_callback(array(
-            'mimeTypes' => array('image/tiff'),
-            'fileExtensions' => array('tif', 'tiff'),
-            ), 'MiradorPlugin::viewer', array());
+        // allow option to display mirador viewer in theme's files
+        // by default, just override all image viewers
+        if (get_option('mirador_override_viewer_in_theme') == '0') {
+            add_file_display_callback(array(
+                'mimeTypes' => array('image/tiff'),
+                'fileExtensions' => array('tif', 'tiff'),
+                ), 'MiradorPlugin::viewer', array());
+        }
     }
 
     public function hookDefineRoutes($args)
@@ -108,6 +115,7 @@ class MiradorPlugin extends Omeka_Plugin_AbstractPlugin
         $options = array(
             'mirador_iiif_server_prod',
             'mirador_iiif_server_test',
+            'mirador_override_viewer_in_theme',
         );
         foreach ($options as $option) {
             if (empty($_POST[$option])) {
