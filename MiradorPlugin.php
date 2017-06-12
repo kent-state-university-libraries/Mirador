@@ -23,19 +23,19 @@ class MiradorPlugin extends Omeka_Plugin_AbstractPlugin
     );
 
     public function hookInstall() {
-        set_option('mirador_override_viewer_in_theme', '0');
         set_option('mirador_search', '0');
     }
 
     public function hookInitialize()
     {
-        // allow option to display mirador viewer in theme's files
-        // by default, just override all image viewers
-        if (empty(get_option('mirador_override_viewer_in_theme'))) {
+        // only add the Mirador viewer on the item view page
+        // to avoid conflicting with file view pages, exhibits, etc.
+        if (strpos($_SERVER['REQUEST_URI'], '/items/show/') !== FALSE) {
             add_file_display_callback(array(
                 'mimeTypes' => array('image/tiff'),
                 'fileExtensions' => array('tif', 'tiff'),
-                ), 'MiradorPlugin::viewer', array());
+                ), 'MiradorPlugin::viewer', array()
+            );
         }
     }
 
@@ -116,7 +116,6 @@ class MiradorPlugin extends Omeka_Plugin_AbstractPlugin
         $options = array(
             'mirador_iiif_server_prod',
             'mirador_iiif_server_test',
-            'mirador_override_viewer_in_theme',
             'mirador_search',
         );
         foreach ($options as $option) {

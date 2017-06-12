@@ -40,14 +40,3 @@
       <p><?php echo __('Check this box if you want to provide a search box within the image viewer that will search the metadata for all the files of an item.');?></p>
     </div>
 </div>
-
-<h3><?php echo __('Advanced Settings'); ?></h3>
-<div class="field">
-    <div class="two columns alpha">
-        <label for="mirador_override_viewer_in_theme"><?php echo __('Override viewer in theme');?></label>
-    </div>
-    <div class="inputs five columns omega">
-      <input type="checkbox" name="mirador_override_viewer_in_theme" value="1" <?php if (get_option('mirador_override_viewer_in_theme')) echo 'checked="checked"'; ?>/>
-      <p><?php echo __('Check this box if do not want to use this plugin\'s default item file override, and instead you want to add the mirador image viewer in your theme template files');?></p>
-    </div>
-</div>
