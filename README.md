@@ -16,7 +16,7 @@ Omeka plugin to display TIFF images in a Mirador IIIF viewer. This plugin provid
       * `tar -zxvf build.tar.gz`
       * `rm build.tar.gz`
     * Build
-      * `cd mirador`
+      * `cd Mirador`
       * `git submodule init views/public/mirador`
       * `cd views/public/mirador`
       * follow the [build instructions for Mirador](https://github.com/ProjectMirador/mirador)
